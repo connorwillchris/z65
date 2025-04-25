@@ -77,6 +77,10 @@ pub const Scanner = struct {
                 TokenType.Equal,
                 undefined,
             ),
+            '<' => try self.addToken(TokenType.Greater, undefined),
+            '>' => try self.addToken(TokenType.Less, undefined),
+            '#' => try self.addToken(TokenType.Hash, undefined),
+            '$' => try self.addToken(TokenType.DollarSign, undefined),
 
             // comments
             ';' => {
@@ -84,7 +88,12 @@ pub const Scanner = struct {
                     _ = self.advance();
                 }
             },
-            ' ', '\r', '\t' => {},
+            ' ', '\r', '\t' => {
+                std.debug.print("Found whitespace at: {d}:{d}\n", .{
+                    self.line,
+                    self.current,
+                });
+            },
             '\n' => self.line += 1,
 
             // strings
@@ -96,7 +105,7 @@ pub const Scanner = struct {
                 if (self.isDigit(c)) {
                     try self.isNumber();
                 } else if (self.isAlpha(c)) {
-                    self.isIdentifier();
+                    try self.isIdentifier();
                 } else {
                     std.debug.print("Unexpected character.\n", .{});
                 }
@@ -180,7 +189,34 @@ pub const Scanner = struct {
         return c >= '0' and c <= '9';
     }
 
-    fn isAlpha()
+    fn isAlpha(_: *Scanner, c: u8) bool {
+        return (c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z') or c == '_';
+    }
+
+    fn isAlphaNumeric(self: *Scanner, c: u8) bool {
+        return self.isAlpha(c) or self.isDigit(c);
+    }
+
+    fn isIdentifier(self: *Scanner) !void {
+        while (self.isAlphaNumeric(self.peek())) _ = self.advance();
+        const text: []const u8 = self.source[self.start..self.current];
+
+        // do all the other tokens here.
+        var token_type: TokenType = undefined;
+        if (std.mem.eql(u8, text, "lda")) {
+            token_type = TokenType.LDA;
+        } else if (std.mem.eql(u8, text, "sta")) {
+            token_type = TokenType.STA;
+        } else {
+            std.debug.print("This identifier is not a registered opcode.\n", .{});
+        }
+
+        if (token_type == undefined) token_type = TokenType.Identifier;
+        try self.addToken(
+            token_type,
+            undefined,
+        );
+    }
 };
 
 pub const Token = struct {
