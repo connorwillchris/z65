@@ -4,7 +4,7 @@ pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
         .root_source_file = b.path("src/main.zig"),
         .name = "z65",
-        .target = b.host,
+        .target = b.graph.host,
     });
     b.installArtifact(exe);
 }

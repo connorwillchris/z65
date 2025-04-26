@@ -84,21 +84,17 @@ pub const Scanner = struct {
 
             // comments
             ';' => {
-                while (self.peek() != '\n' and self.isAtEnd()) {
+                while (self.peek() != '\n' and !self.isAtEnd()) {
                     _ = self.advance();
                 }
             },
             ' ', '\r', '\t' => {
-                std.debug.print("Found whitespace at: {d}:{d}\n", .{
-                    self.line,
-                    self.current,
-                });
+                //std.debug.print("Found whitespace at: {d}:{d}\n", .{ self.line, self.current });
             },
             '\n' => self.line += 1,
-
             // strings
             '\"' => {
-                try self.doString();
+                try self.isString();
             },
 
             else => {
@@ -150,7 +146,7 @@ pub const Scanner = struct {
         return true;
     }
 
-    fn doString(self: *Scanner) !void {
+    fn isString(self: *Scanner) !void {
         while (self.peek() != '\"' and !self.isAtEnd()) {
             if (self.peek() == '\n') self.line += 1;
 
@@ -203,15 +199,21 @@ pub const Scanner = struct {
 
         // do all the other tokens here.
         var token_type: TokenType = undefined;
-        if (std.mem.eql(u8, text, "lda")) {
+        const buf = try std.ascii.allocLowerString(
+            self.allocator,
+            text,
+        );
+        defer self.allocator.free(buf);
+
+        if (std.mem.eql(u8, buf, "lda")) {
             token_type = TokenType.LDA;
-        } else if (std.mem.eql(u8, text, "sta")) {
+        } else if (std.mem.eql(u8, buf, "sta")) {
             token_type = TokenType.STA;
         } else {
-            std.debug.print("This identifier is not a registered opcode.\n", .{});
+            token_type = TokenType.None;
         }
 
-        if (token_type == undefined) token_type = TokenType.Identifier;
+        if (token_type == TokenType.None) token_type = TokenType.Identifier;
         try self.addToken(
             token_type,
             undefined,
@@ -321,4 +323,5 @@ pub const TokenType = enum {
     TYA,
 
     EndOfFile,
+    None,
 };

@@ -2,9 +2,8 @@ const std = @import("std");
 const scanner = @import("scanner.zig");
 
 const s =
-    \\    lda #$00 ;fuck
+    \\    LDA #$00;fuck
     \\    sta $0100
-    \\
 ;
 
 pub fn main() !void {
@@ -15,11 +14,10 @@ pub fn main() !void {
     const toks = try scan.scanTokens();
 
     for (toks.items) |token| {
-        std.debug.print("TokenType: {?} \"{s}\" LINE: {d}\n", .{
+        std.debug.print("TokenType: {?}\t\"{s}\"\tLINE: {d}\n", .{
             token.token_type,
             token.lexeme,
             token.line,
-            //token.literal,
         });
     }
 }
