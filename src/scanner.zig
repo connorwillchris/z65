@@ -28,7 +28,6 @@ pub const Scanner = struct {
         try self.tokens.append(Token.new(
             TokenType.EndOfFile,
             "",
-            undefined,
             self.line,
         ));
         return self.tokens;
@@ -43,44 +42,54 @@ pub const Scanner = struct {
         switch (c) {
             '(' => try self.addToken(
                 TokenType.LeftParen,
-                undefined,
+                //undefined,
             ),
             ')' => try self.addToken(
                 TokenType.RightParen,
-                undefined,
+                //undefined,
             ),
             ',' => try self.addToken(
                 TokenType.Comma,
-                undefined,
+                //undefined,
             ),
             '.' => try self.addToken(
                 TokenType.Period,
-                undefined,
+                //undefined,
             ),
             '-' => try self.addToken(
                 TokenType.Minus,
-                undefined,
+                //undefined,
             ),
             '/' => try self.addToken(
                 TokenType.Slash,
-                undefined,
+                //undefined,
             ),
             '*' => try self.addToken(
                 TokenType.Star,
-                undefined,
+                //undefined,
             ),
             '!' => try self.addToken(
                 TokenType.Bang,
-                undefined,
+                //undefined,
             ),
             '=' => try self.addToken(
                 TokenType.Equal,
-                undefined,
+                //undefined,
             ),
-            '<' => try self.addToken(TokenType.Greater, undefined),
-            '>' => try self.addToken(TokenType.Less, undefined),
-            '#' => try self.addToken(TokenType.Hash, undefined),
-            '$' => try self.addToken(TokenType.DollarSign, undefined),
+            '<' => try self.addToken(
+                TokenType.Greater, //undefined),
+            ),
+            '>' => try self.addToken(
+                TokenType.Less, //undefined),
+            ),
+            '#' => try self.addToken(
+                TokenType.Hash, //undefined
+            ),
+            '$' => try self.addToken(
+                TokenType.DollarSign, //undefined
+            ),
+            '%' => try self.addToken(TokenType.Percent),
+            ':' => try self.addToken(TokenType.Colon),
 
             // comments
             ';' => {
@@ -120,12 +129,12 @@ pub const Scanner = struct {
     fn addToken(
         self: *Scanner,
         token_type: TokenType,
-        literal: *const anyopaque,
+        //literal: *const anyopaque,
     ) !void {
         try self.tokens.append(Token.new(
             token_type,
             self.source[self.start..self.current],
-            literal,
+            //literal,
             self.line,
         ));
     }
@@ -160,24 +169,24 @@ pub const Scanner = struct {
 
         _ = self.advance();
 
-        const value = self.source[(self.start + 1)..(self.current - 1)];
+        //const value = self.source[(self.start + 1)..(self.current - 1)];
         try self.addToken(
             TokenType.String,
-            @ptrCast(value),
+            //@ptrCast(value),
         );
     }
 
     fn isNumber(self: *Scanner) !void {
         while (self.isDigit(self.peek())) _ = self.advance();
-        const value = try std.fmt.parseInt(
-            u32,
-            self.source[self.start..self.current],
-            10,
-        );
+        //const value = try std.fmt.parseInt(
+        //u32,
+        //self.source[self.start..self.current],
+        // 10,
+        //);
 
         try self.addToken(
             TokenType.Number,
-            &value,
+            //&value,
         );
     }
 
@@ -216,7 +225,7 @@ pub const Scanner = struct {
         if (token_type == TokenType.None) token_type = TokenType.Identifier;
         try self.addToken(
             token_type,
-            undefined,
+            //undefined,
         );
     }
 };
@@ -224,19 +233,19 @@ pub const Scanner = struct {
 pub const Token = struct {
     token_type: TokenType,
     lexeme: []const u8,
-    literal: *const anyopaque,
+    //literal: *const anyopaque,
     line: usize,
 
     pub fn new(
         token_type: TokenType,
         lexeme: []const u8,
-        literal: *const anyopaque,
+        //literal: *const anyopaque,
         line: usize,
     ) Token {
         return .{
             .token_type = token_type,
             .lexeme = lexeme,
-            .literal = literal,
+            //.literal = literal,
             .line = line,
         };
     }
@@ -250,6 +259,7 @@ pub const TokenType = enum {
     Period,
     Minus,
     Semicolon,
+    Colon,
     Slash,
     Star,
     Bang,
@@ -258,6 +268,7 @@ pub const TokenType = enum {
     Less,
     Hash,
     DollarSign,
+    Percent,
 
     // literals
     Identifier,

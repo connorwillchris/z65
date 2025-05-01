@@ -2,8 +2,12 @@ const std = @import("std");
 const scanner = @import("scanner.zig");
 
 const s =
-    \\    LDA #$00;fuck
+    \\.global hello_world
+    \\hello_world:
+    \\    LDA #$00 ;fuck this shit, i'm out!
     \\    sta $0100
+    \\    lda #%01010101
+    \\    lda #$55
 ;
 
 pub fn main() !void {
