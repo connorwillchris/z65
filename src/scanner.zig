@@ -113,6 +113,8 @@ pub const Scanner = struct {
                     try self.isIdentifier();
                 } else {
                     std.debug.print("Unexpected character.\n", .{});
+                    // TODO append an error token to the list of tokens with
+                    // the associated character.
                 }
             },
         }
