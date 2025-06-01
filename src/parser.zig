@@ -81,4 +81,12 @@ pub const OpcodeUniversal = enum(u8) {
     BplRelative = 0x10,
     OraIndexedY = 0x11,
     OraZeropageX = 0x15,
+    AslZeropageX = 0x16,
+    ClcImpl = 0x17,
+    OraAbsoluteY = 0x19,
+    OraAbsoluteX = 0x1d,
+    AslAbsoluteX = 0x1e,
+
+    // row 2
+
 };
